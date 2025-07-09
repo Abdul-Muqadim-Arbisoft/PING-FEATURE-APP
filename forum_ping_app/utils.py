@@ -133,12 +133,15 @@ def send_notification(message_type, data, subject, dest_emails, request_user=Non
         a boolean variable indicating email response.
         if email is successfully send to all dest emails -> return True otherwise return false.
     """
+   
+    log.info("i am here")
+    
     if not current_site:
         current_site = Site.objects.all().first()
 
     if not request_user:
         try:
-            request_user = User.objects.get(username="rehman")
+            request_user = User.objects.get(username="11")
         except User.DoesNotExist:
             log.error(
                 "Unable to send email as Email Admin User with username: {} does not exist.".format(

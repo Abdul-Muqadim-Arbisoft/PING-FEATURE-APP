@@ -7,12 +7,17 @@ from openedx.core.djangoapps.django_comment_common.signals import (
 from openedx.core.djangoapps.theming.helpers import get_current_site
 
 from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
+from django.db.models.signals import post_save
 from .utils import (
     is_discussion_notification_configured_for_site, update_context_with_comment,
     update_context_with_thread, build_discussion_notification_context
 )
 from .tasks import send_thread_mention_email_task
+from logging import getLogger
+log = getLogger(__name__)
 
 
 @receiver(comment_created)
@@ -32,7 +37,9 @@ def send_thread_mention_email_notification(sender, user, post, **kwargs):
     """
     import pdb
     pdb.set_trace()
+    log.info("Working woriking good good hahah")
     current_site = get_current_site()
+
 
     if current_site is None:
         current_site = Site.objects.get_current()
@@ -56,3 +63,9 @@ def send_thread_mention_email_notification(sender, user, post, **kwargs):
         update_context_with_comment(context, post)
     message_context = build_discussion_notification_context(context)
     send_thread_mention_email_task.delay(post.body, message_context, is_thread)
+
+@receiver(post_save, sender=CourseOverview)
+def upload_course_default_image(sender, instance, created, **kwargs):
+    log.info("Working woriking good good hahah")
+    var="testing"
+    
