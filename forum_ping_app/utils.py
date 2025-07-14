@@ -110,16 +110,42 @@ def get_mentioned_users_list(input_string, users_list=None):
         return get_mentioned_users_list(remianing_string, users_list)
 
 
+# def send_ace_message(request_user, request_site, dest_email, context, message_class):
+#     with emulate_http_request(site=request_site, user=request_user):
+#         message = message_class().personalize(
+#             recipient=Recipient(lms_user_id=0, email_address=dest_email),
+#             language='en',
+#             user_context=context,
+#         )
+#         log.info('Sending email notification with context %s', context)
+#         ace.send(message)
 def send_ace_message(request_user, request_site, dest_email, context, message_class):
-    with emulate_http_request(site=request_site, user=request_user):
-        message = message_class().personalize(
-            recipient=Recipient(lms_user_id=0, email_address=dest_email),
-            language='en',
-            user_context=context,
-        )
-        log.info('Sending email notification with context %s', context)
-        ace.send(message)
-
+    log.info("Attempting to send via ACE...")
+    # pdb.set_trace()
+    try:
+        with emulate_http_request(site=request_site, user=request_user):
+            log.info(f"Creating ACE message for {dest_email}")
+            
+            # Debug: Print the context being used
+            log.info(f"Message context: {context}")
+            
+            message = message_class().personalize(
+                recipient=Recipient(lms_user_id=0, email_address=dest_email),
+                language='en',
+                user_context=context,
+            )
+            
+            log.info(f"Message object created: {message}")
+            
+            # Debug: Check if ACE is configured to send
+            log.info("Attempting to send via ACE...")
+            ace.send(message)
+            
+            log.info(f"Email sent to {dest_email} via ACE")
+            return True
+    except Exception as e:
+        log.error(f"Failed to send ACE email to {dest_email}: {str(e)}")
+        return False
 
 def send_notification(message_type, data, subject, dest_emails, request_user=None, current_site=None):
     """
@@ -141,7 +167,7 @@ def send_notification(message_type, data, subject, dest_emails, request_user=Non
 
     if not request_user:
         try:
-            request_user = User.objects.get(username="11")
+            request_user = User.objects.get(username="mlabeeb")
         except User.DoesNotExist:
             log.error(
                 "Unable to send email as Email Admin User with username: {} does not exist.".format(
