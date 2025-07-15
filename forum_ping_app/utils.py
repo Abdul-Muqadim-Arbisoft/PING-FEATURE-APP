@@ -22,21 +22,26 @@ from openedx.core.lib.celery.task_utils import emulate_http_request
 from .message_types import ThreadMentionNotification
 
 # log = logging.getLogger(__name__)
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+
+# Create a clean, safe stream handler
 handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s: %(message)s')
 handler.setFormatter(formatter)
 
-# Get the root logger
+# Apply it to the root logger
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.DEBUG)
-root_logger.handlers = [handler]  # Override existing handlers
+root_logger.addHandler(handler)
 
-# Force all loggers to DEBUG level
+# Force all child loggers to debug level (optional)
 for name in logging.root.manager.loggerDict:
     logging.getLogger(name).setLevel(logging.DEBUG)
 
+# Test
 log = logging.getLogger(__name__)
-log.debug("Logging set up correctly.")
+log.debug("✅ Logging setup applied successfully.")
 
 ENABLE_FORUM_NOTIFICATIONS_FOR_SITE_KEY = 'enable_forum_notifications'
 User = get_user_model()
