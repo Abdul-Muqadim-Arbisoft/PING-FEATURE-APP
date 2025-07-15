@@ -21,7 +21,12 @@ from openedx.core.lib.celery.task_utils import emulate_http_request
 
 from .message_types import ThreadMentionNotification
 
+# log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+for logger_name in logging.root.manager.loggerDict:
+    logging.getLogger(logger_name).setLevel(logging.DEBUG)
 log = logging.getLogger(__name__)
+
 ENABLE_FORUM_NOTIFICATIONS_FOR_SITE_KEY = 'enable_forum_notifications'
 User = get_user_model()
 
@@ -139,8 +144,10 @@ def send_ace_message(request_user, request_site, dest_email, context, message_cl
             
             # Debug: Check if ACE is configured to send
             log.info("Attempting to send via ACE...")
+            log.debug("About to send ACE message...")
             ace.send(message)
-            
+            log.debug("ACE message sent.")
+
             log.info(f"Email sent to {dest_email} via ACE")
             return True
     except Exception as e:
