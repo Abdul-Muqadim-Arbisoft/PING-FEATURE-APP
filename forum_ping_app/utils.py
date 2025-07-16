@@ -168,7 +168,7 @@ def send_notification(message_type, data, subject, dest_emails, request_user=Non
 
     if not request_user:
         try:
-            request_user = User.objects.get(username="mlabeeb")
+            request_user = User.objects.get(username="11")
         except User.DoesNotExist:
             log.error(
                 "Unable to send email as Email Admin User with username: {} does not exist.".format(
