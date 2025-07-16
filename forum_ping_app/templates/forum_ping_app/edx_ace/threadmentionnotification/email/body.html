@@ -4,9 +4,10 @@
 {% load static %}
 
 {% block content %}
-<table width="100%" align="left" border="0" cellpadding="0" cellspacing="0" role="presentation">
+<table width="100%" align="left" border="0" cellpadding="0" cellspacing="0" role="presentation" style="font-family: Arial, sans-serif; font-size: 15px; color: #333;">
     <tr>
         <td>
+            <!-- Greeting -->
             <p style="margin: 0 0 16px 0;">
                 {% blocktrans trimmed %}
                     Hello {{ name }},
@@ -14,41 +15,70 @@
             </p>
 
             {% if course_list %}
-                <div style="border-left: 1px solid rgba(0,0,0,0.25);
-                            padding: 1px 1px 1px 15px;
-                            margin: 20px 20px 30px 30px;
-                            color: rgba(0,0,0,.75);">
-                    <p style="margin: 0 0 10px 0;">{{ intro }}</p>
-                    <p style="margin: 10px 0 10px 0;"><strong>{% trans "Your current courses:" %}</strong></p>
-                    <ul style="margin: 0 0 10px 15px; padding-left: 0;">
+                <!-- Active course block -->
+                <div style="border-left: 4px solid #be3712;
+                            background-color: #ffffff;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                            border-radius: 6px;
+                            padding: 20px;
+                            margin: 20px 0 30px 0;">
+                    <p style="margin: 0 0 12px 0;">{{ intro }}</p>
+
+                    <p style="margin: 16px 0 8px 0; font-weight: 600;">{% trans "Your current courses:" %}</p>
+                    <ul style="padding-left: 20px; margin: 0;">
                         {% for course in course_list %}
-                            <li style="margin-bottom: 5px;">
-                                <a href="{{ course.link }}" style="color: #1a73e8; text-decoration: none;">
+                            <li style="margin-bottom: 10px; line-height: 1.5;">
+                                <a href="{{ course.link }}"
+                                   style="color: #be3712; text-decoration: none; font-weight: bold;">
                                     {{ course.title }}
                                 </a>
                             </li>
                         {% endfor %}
                     </ul>
+
                     <p style="margin-top: 20px;">{{ call_to_action }}</p>
                 </div>
             {% else %}
-                <div style="border-left: 1px solid rgba(0,0,0,0.25);
-                            padding: 1px 1px 1px 15px;
-                            margin: 20px 20px 30px 30px;
-                            color: rgba(0,0,0,.75);">
+                <!-- No course enrolled block -->
+                <div style="border-left: 4px solid #be3712;
+                            background-color: #ffffff;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                            border-radius: 6px;
+                            padding: 20px;
+                            margin: 20px 0 30px 0;">
                     <p style="margin-bottom: 20px;">{{ message|linebreaks }}</p>
-                    <a href="{{ catalog_link }}" style="font-weight: bold; text-decoration: none; color: #1a73e8;">
-                        {% trans "Browse available courses" %}
+
+                    <a href="{{ catalog_link }}" style="display: inline-block;
+                       background-color: #be3712;
+                       color: #ffffff;
+                       padding: 12px 20px;
+                       border-radius: 5px;
+                       font-weight: bold;
+                       font-size: 14px;
+                       text-decoration: none;">
+                        {% trans "Browse Available Courses" %}
                     </a>
                 </div>
             {% endif %}
 
+            <!-- Closing statement -->
+            <p style="margin-top: 30px; font-size: 14px; color: #333;">
+                {% trans "See you soon on the platform!" %}<br/>
+                <span style="font-weight: 600;">{% trans "— The Course Team" %}</span>
+            </p>
+
+            <!-- GA Pixel -->
             {% block google_analytics_pixel %}
                 <img src="{{ ga_tracking_pixel_url }}" alt="" role="presentation" aria-hidden="true" style="display: block;" />
             {% endblock %}
 
-            <p style="color: rgba(0,0,0,.75); font-size: 12px;">
-                {% blocktrans %}This email was automatically sent from {{ platform_name }} to {{ email }}.{% endblocktrans %}
+            <!-- Footer -->
+            <p style="margin-top: 30px; font-size: 12px; color: rgba(0,0,0,.6);">
+                {% blocktrans %}
+                    This email was automatically sent from
+                    <span style="color: #be3712; font-weight: bold;">{{ platform_name }}</span>
+                    to {{ email }}.
+                {% endblocktrans %}
             </p>
         </td>
     </tr>
