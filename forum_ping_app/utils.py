@@ -185,11 +185,12 @@ def send_notification(message_type, data, subject, dest_emails, request_user=Non
     message_class = MESSAGE_TYPES[message_type]
     return_value = True
 
-    base_root_url = 'http://local.openedx.io:8000/'
+    base_root_url = current_site.configuration.get_value('LMS_ROOT_URL')
+
 
     message_context.update({
-        "site_name":  'Openedx',
-        "logo_url": 'https://d19mbak9hk3cwy.cloudfront.net/wp-content/uploads/2022/10/edly-site-logo-new.svg',
+        "site_name":  current_site.configuration.get_value('platform_name'),
+        "logo_url": 'https://courses.africancitieslab.org/static/indigo/images/logo.7fd3f2a54402.png',
     })
     for email in dest_emails:
         message_context.update({
