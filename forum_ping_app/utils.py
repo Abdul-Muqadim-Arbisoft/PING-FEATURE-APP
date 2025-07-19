@@ -119,37 +119,75 @@ def get_mentioned_users_list(input_string, users_list=None):
 #         )
 #         log.info('Sending email notification with context %s', context)
 #         ace.send(message)
+# def send_ace_message(request_user, request_site, dest_email, context, message_class):
+#     log.info("Attempting to send via ACE...")
+#     # pdb.set_trace()
+#     try:
+#         with emulate_http_request(site=request_site, user=request_user):
+#             log.info(f"Creating ACE message for {dest_email}")
+            
+#             # Debug: Print the context being used
+#             log.info(f"Message context: {context}")
+            
+#             try:
+#                 message = message_class().personalize(
+#                     recipient=Recipient(lms_user_id=0, email_address=dest_email),
+#                     language='en',
+#                     user_context=context,
+#                 )
+#             except Exception as e:
+#                 log.error(f"ACE personalize failed for {dest_email}: {e}", exc_info=True)
+#                 return False
+            
+#             log.info(f"Message object created: {message}")
+            
+#             # Debug: Check if ACE is configured to send
+#             log.info("Attempting to send via ACE...")
+#             ace.send(message)
+#             log.debug("message sent testing")
+            
+#             log.info(f"Email sent to {dest_email} via ACE")
+#             return True
+#     except Exception as e:
+#         log.error(f"Failed to send ACE email to {dest_email}: {str(e)}")
+#         return False
 def send_ace_message(request_user, request_site, dest_email, context, message_class):
-    log.info("Attempting to send via ACE...")
-    # pdb.set_trace()
+    log.info("Attempting to send email via ACE...")
     try:
         with emulate_http_request(site=request_site, user=request_user):
-            log.info(f"Creating ACE message for {dest_email}")
-            
-            # Debug: Print the context being used
-            log.info(f"Message context: {context}")
-            
+            log.info(f"Creating ACE message for recipient: {dest_email}")
+            log.info(f"Context passed to ACE:\n{json.dumps(context, indent=2, default=str)}")
+
             try:
                 message = message_class().personalize(
                     recipient=Recipient(lms_user_id=0, email_address=dest_email),
-                    language='en',
+                    language=context.get('language', 'en'),
                     user_context=context,
                 )
+                log.info(f"ACE message object created successfully for {dest_email}")
             except Exception as e:
-                log.error(f"ACE personalize failed for {dest_email}: {e}", exc_info=True)
+                log.info(f"ACE personalize() failed for {dest_email}: {e}", exc_info=True)
                 return False
-            
-            log.info(f"Message object created: {message}")
-            
-            # Debug: Check if ACE is configured to send
-            log.info("Attempting to send via ACE...")
-            ace.send(message)
-            log.debug("message sent testing")
-            
-            log.info(f"Email sent to {dest_email} via ACE")
-            return True
+
+            # Try rendering message and log result
+            try:
+                rendered_body = message.render('body')
+                rendered_subject = message.render('subject')
+                log.info(f"Rendered email subject: {rendered_subject}")
+                log.info(f"Rendered email body:\n{rendered_body}")
+            except Exception as render_error:
+                log.info(f"Rendering ACE message failed for {dest_email}: {render_error}", exc_info=True)
+
+            try:
+                ace.send(message)
+                log.info(f"ACE email successfully sent to: {dest_email}")
+                return True
+            except Exception as send_error:
+                log.info(f"ACE send() failed for {dest_email}: {send_error}", exc_info=True)
+                return False
+
     except Exception as e:
-        log.error(f"Failed to send ACE email to {dest_email}: {str(e)}")
+        log.info(f"Failed to send ACE email to {dest_email}: {e}", exc_info=True)
         return False
 
 def send_notification(message_type, data, subject, dest_emails, request_user=None, current_site=None):
