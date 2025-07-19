@@ -129,11 +129,15 @@ def send_ace_message(request_user, request_site, dest_email, context, message_cl
             # Debug: Print the context being used
             log.info(f"Message context: {context}")
             
-            message = message_class().personalize(
-                recipient=Recipient(lms_user_id=0, email_address=dest_email),
-                language='en',
-                user_context=context,
-            )
+            try:
+                message = message_class().personalize(
+                    recipient=Recipient(lms_user_id=0, email_address=dest_email),
+                    language='en',
+                    user_context=context,
+                )
+            except Exception as e:
+                log.error(f"ACE personalize failed for {dest_email}: {e}", exc_info=True)
+                return False
             
             log.info(f"Message object created: {message}")
             
