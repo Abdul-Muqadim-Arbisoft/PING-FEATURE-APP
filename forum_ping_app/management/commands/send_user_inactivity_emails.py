@@ -256,6 +256,8 @@ class Command(BaseCommand):
                         "subject": no_enrollment_email["subject"],
                         "greeting": no_enrollment_email["greeting"].format(name=name),
                         "closing": no_enrollment_email["closing"],
+                        "course_list": []
+
                     }
                     self.send_notification_email(user.email, "thread_mention", context, no_enrollment_email["subject"])
                     logger.info(f"Sent no-enrollment email to {user.email}")
